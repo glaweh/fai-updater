@@ -60,10 +60,9 @@ sub start_one {
     $self->{HOSTPID}->{$host} = $pid;
   } else {
     die "cannot fork: $!" unless defined $pid;
-    open STDIN,'/dev/null';
-    open STDERR,'>/dev/null';
+    open STDIN,'/dev/null'; open STDERR,'>/dev/null';
     open STDOUT,">".$self->{LOGDIR}."/$host";
-    exec $command,"$host";
+    exec $command,$host;
   } 
 }
 
