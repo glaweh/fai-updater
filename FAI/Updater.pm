@@ -38,7 +38,7 @@ sub _init {
   die "I need a DISPLAY" unless $self->{DISPLAY};
 }
 
-sub start_one {
+sub _start_one {
   my ($self,$host)=(shift,shift);
   
   if ($self->{PING}) {
@@ -70,7 +70,7 @@ sub start_one {
 }
 
 # extract state from a complete logfile
-sub check_logfile {
+sub _check_logfile {
   my ($self,$host) = (shift,shift);
   my $logfile=$self->{LOGDIR} . "/$host";
   open LOGFILE,$logfile;
@@ -115,13 +115,13 @@ sub run {
     } else {
       delete $self->{HOSTPID}->{$name};
     } 
-    $self->{DISPLAY}->set_state($name,$self->check_logfile($name));
+    $self->{DISPLAY}->set_state($name,$self->_check_logfile($name));
   }
   
   # fork new processes if there are less running than possible
   while ($running<$self->{MAX_SIMULTANOUS}) {
     last unless my $host=shift @{$self->{TO_DO}};
-    $self->start_one($host);
+    $self->_start_one($host);
     $running++;
   }
   return $running;
