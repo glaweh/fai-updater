@@ -4,7 +4,7 @@ sub append {
 	my $self = shift;
 	my $value = shift;
 	push @{$self->{-values}},$value;
-	$self->intellidraw();
+	$self->draw();
 }
 sub remove {
 	my $self = shift;
@@ -16,7 +16,7 @@ sub remove {
 			$self->{-selected}-- if (defined $self->{-selected} and ($_<$self->{-selected}));
 		}
 	}
-	$self->intellidraw();
+	$self->draw();
 }
 
 return 1;
