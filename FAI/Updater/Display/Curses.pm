@@ -37,6 +37,7 @@ sub _init {
 			-title=>$_,
 			-bg=>$self->{COLORS}->{$_}
 			);
+		$self->{COL}->[$idx]->onChange($self->{SELECT}) if ($self->{SELECT});
 		$idx++;$sofar+=$hostwidth;
 	}
 }
