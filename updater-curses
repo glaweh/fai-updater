@@ -8,7 +8,7 @@ use POSIX qw(strftime);
 $Getopt::Std::STANDARD_HELP_VERSION=1;
 
 # options
-our ($opt_P,$opt_H,$opt_s,$opt_n,$opt_o);
+our ($opt_H,$opt_s,$opt_n,$opt_o);
 
 our $VERSION="0.1";
 
@@ -23,8 +23,6 @@ sub HELP_MESSAGE {
 Usage: $0 [options] <netgroup|-H host1,host2,...>
   --help            display this help message
   --version         print version
-  -P                don't use fping to check availability before trying 
-                    to update
   -o                ordered mode: don't randomize order of hosts
   -s <number>       number of updates running simultanously
   -n                dryrun mode: use a dummy-script instead of really 
@@ -46,7 +44,7 @@ sub shutdown() {
 #  main routine
 # - - - - - - - - - - - - - - - - - - - -
 
-getopts('hH:Ps:no');
+getopts('hH:s:no');
 # emit help message when no hosts/no netgroup is given on the command line
 (($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
 $netgroup=$ARGV[0] if $ARGV[0];
@@ -61,7 +59,7 @@ die "can't create logdir $logdir" unless mkdir $logdir;
 
 my $display=FAI::Updater::Display::Curses->new(CUI=>$cui);
 $display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
-$updater=FAI::Updater->new(DISPLAY=>$display,PING=>!$opt_P,DRYRUN=>$opt_n,ORDERED=>$opt_o,LOGDIR=>$logdir);
+$updater=FAI::Updater->new(DISPLAY=>$display,PING=>0,DRYRUN=>$opt_n,ORDERED=>$opt_o,LOGDIR=>$logdir);
 $updater->max_simultanous($opt_s) if $opt_s;
 $updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
 
