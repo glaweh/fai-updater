@@ -1,0 +1,26 @@
+#! /bin/bash
+WAITTIME="$[ $RANDOM*10/32768 ]"
+echo $1 is waiting for $WAITTIME seconds
+sleep $WAITTIME
+#randomly fail to start
+[ "$[ $RANDOM*10/32768 ]" -lt 1 ] && exit
+cat <<-EOF
+    -----------------------------------------------------
+      FAIVERSIONSTRING
+      Fully Automatic Installation for Debian GNU/Linux
+
+      Copyright (c) 1999-2002, Thomas Lange
+              lange@informatik.uni-koeln.de
+    -----------------------------------------------------
+EOF
+
+sleep 2
+
+#randomly fail in the middle
+[ "$[ $RANDOM*10/32768 ]" -lt 1 ] && exit
+
+# randomly produce apt errors
+[ "$[ $RANDOM*10/32768 ]" -lt 1 ] && echo "An error occured" 
+sleep 3
+echo "Saving log files to z1"
+sleep 2

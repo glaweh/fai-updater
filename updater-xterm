@@ -1,0 +1,111 @@
+#! /usr/bin/perl -w
+use strict;
+use Getopt::Std;
+use FAI::Updater;
+$Getopt::Std::STANDARD_HELP_VERSION=1;
+
+# options
+our ($opt_h,$opt_P,$opt_H,$opt_s,$opt_n,$opt_d,$opt_i);
+
+my $netgroup='hand-defined';
+
+{ package FAI::Updater::Display::VT100;
+  use base qw(FAI::Updater::Display);
+
+  my $CSI=chr(27) . "[";
+  my $DEFCOLOR=$CSI."0m";
+  
+  my %scolor = (
+    waiting => $CSI."34;1m", # blue
+    started => $CSI."33;1m", # yellow
+    running => $CSI."33;7m", # inverse yellow
+    success => $CSI."32;1m", # green
+    error   => $CSI."31;7m", # inverse red
+    unfinished => $CSI."31;4m", # underlined red
+    empty   => $CSI."31m"    # red
+    );
+    
+  sub _init {
+    my $self=shift;
+    $self->{HIDE}={};
+  }
+  
+  sub enable {
+    my $self=shift;
+    #set the cursor to 1,1 and clear everything below 
+    $self->{DEBUG} or print $CSI."f$CSI"."0J" ;
+    print "do_the_update $netgroup\nStates: ";
+    # color legend
+    foreach (@FAI::Updater::states) {
+      print "" . (defined $scolor{$_} ? $scolor{$_} : '' ) . "$_$DEFCOLOR ";
+    }
+    print "\n";
+    $self->SUPER::enable;
+    $self->show();
+  }
+
+  sub set_state {
+    my $self=shift;
+    $self->SUPER::set_state(@_);
+    $self->show() if ($self->{ENABLED});
+  }
+  
+  sub show {
+    my $self=shift;
+    # set the cursor to 3,1 and clear everything below
+    my $result;
+    $self->{DEBUG} or $result=$CSI . "3f$CSI" . "0J" ;
+    foreach (sort keys %{$self->{STATUS}}) {
+      # the current status
+      my $s=$self->{STATUS}->{$_};
+      # allow ignoring hosts in some states
+      next if exists $self->{HIDE}->{$s};
+      # colorize hostname if there's a color corresponding the state
+      $result .= (defined $scolor{$s} ? $scolor{$s} : '' ) . "$_$DEFCOLOR\n";
+    }
+    # print everything in one go to keep the flicker low
+    print $result;
+  }
+
+  sub hide_states {
+    my $self=shift;
+    $self->{HIDE}={};
+    map { $self->{HIDE}->{$_}=1 } @_;
+  }
+  
+  sub debug {
+    my $self=shift;
+    return $self->{DEBUG} unless my $debug=shift;
+    $self->{DEBUG}=$debug;
+  }
+}
+
+sub HELP_MESSAGE {
+  my $FH = shift;
+  print $FH <<EOF
+blah blieh blubb
+EOF
+}
+
+# - - - - - - - - - - - - - - - - - - - -
+#  main routine
+# - - - - - - - - - - - - - - - - - - - -
+
+getopts('hH:Ps:ndi:');
+(($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
+$netgroup=$ARGV[0] if $ARGV[0];
+
+my $display=FAI::Updater::Display::VT100->new;
+my $updater=FAI::Updater->new($display);
+$updater->max_simultanous($opt_s) if $opt_s;
+my @all_hosts = ( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
+$updater->init_hostlist(! $opt_P,@all_hosts);
+$opt_n and $updater->dryrun(1);
+$opt_d and $display->debug(1);
+$opt_i and $display->hide_states(split(/,/,$opt_i));
+$display->enable();
+do {
+  sleep 1;
+} until ($updater->run()==0);
+
+$display->disable();

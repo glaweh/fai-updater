@@ -1,0 +1,16 @@
+#! /usr/bin/perl
+# HG: convert netgroup output to a line-by-line listing of hostnames
+
+die "usage: $0 <netgroup>" if ($#ARGV<0);
+
+# get the netgroup output
+$_=`getent netgroup $ARGV[0]`;
+chomp;
+# strip off the key (first entry)
+s/^\S+//;
+# remove brackets and commas
+s/[\(\)\,]//g;
+# remove anything after the short hostname
+@hostlist=map {s/\..*$//; $_ } split;
+# write out newline-delimited list of hostnames
+print join("\n", @hostlist) . "\n";
