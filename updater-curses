@@ -36,6 +36,8 @@ sub updater_cb() {
 	if ($updater->run()) {
 	} elsif ($quit) {
 		exit(0);
+	} else {
+		$statusdisplay->text("idle");
 		$statusdisplay->draw();
 	}
 }
