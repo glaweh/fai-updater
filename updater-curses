@@ -61,6 +61,7 @@ sub shutdown_update() {
 sub select_handler() {
 	my $listbox = shift;
 	my $sel = $listbox->get();
+	$listbox->clear_selection();
 	viewer_on($sel);
 }
 
