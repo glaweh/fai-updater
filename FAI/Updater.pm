@@ -128,7 +128,11 @@ sub run {
 
 sub max_simultanous {
   my $self = shift;
-  return $self->{MAX_SIMULTANOUS} unless $self->{MAX_SIMULTANOUS}=shift;
+  my $neu = shift;
+  if (defined $neu) {
+  	$self->{MAX_SIMULTANOUS}=$neu;
+  }
+  return $self->{MAX_SIMULTANOUS};
 }
 
 package FAI::Updater::Display;
