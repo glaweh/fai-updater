@@ -1,5 +1,6 @@
 package FAI::Updater;
 use strict;
+use warnings;
 use POSIX qw(:sys_wait_h strftime);
 use IPC::Open2;
 our @states = qw(unreachable error unfinished empty success running started waiting);
