@@ -14,30 +14,32 @@ our @states = qw(unreachable error unfinished empty success running started wait
 #   waiting     - update not yet started
 
 sub new {
-  my ($class,$display,$logdir) = (shift,shift,shift);
+  my $class = shift;
   my $self = {};
-  die "I need a DISPLAY" unless $self->{DISPLAY}=$display;
-  $self->{LOGDIR}=(defined $logdir ? $logdir : "/var/log/fai-updater/" . strftime("%Y-%m-%d_%H-%M-%S", localtime));
-  die "logdir".$self->{LOGDIR}." already exists !" if -d $self->{LOGDIR};
-  die "can't create logdir ".$self->{LOGDIR} unless mkdir $self->{LOGDIR};
+  bless($self,$class);
+  $self->_init(@_);
+  return $self;
+}
+
+sub _init {
+  my $self=shift;
+  $self->{LOGDIR}="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
   $self->{HOSTPID}={};
   $self->{DRYRUN}=0;
   $self->{TO_DO}=();
   $self->{MAX_SIMULTANOUS}=4;
   $self->{PING}=1;
-  bless($self,$class);
-  return $self;
-}
-
-sub dryrun {
-  my $self=shift;
-  return $self->{DRYRUN} unless my $mode=shift;
-  $self->{DRYRUN} = $mode;
+  $self->{ORDERED}=0;
+  my %dummy=(@_);
+  map { $self->{$_}=$dummy{$_} }keys %dummy;
+  $self->{COMMAND} = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
+  die "logdir".$self->{LOGDIR}." already exists !" if -d $self->{LOGDIR};
+  die "can't create logdir ".$self->{LOGDIR} unless mkdir $self->{LOGDIR};
+  die "I need a DISPLAY" unless $self->{DISPLAY};
 }
 
 sub start_one {
   my ($self,$host)=(shift,shift);
-  my $command = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
   
   if ($self->{PING}) {
     # try to ping the machine before update
@@ -63,7 +65,7 @@ sub start_one {
     die "cannot fork: $!" unless defined $pid;
     open STDIN,'/dev/null'; open STDERR,'>/dev/null';
     open STDOUT,">".$self->{LOGDIR}."/$host";
-    exec $command,$host;
+    exec $self->{COMMAND},$host;
   } 
 }
 
@@ -91,17 +93,16 @@ sub check_logfile {
 
 sub init_hostlist {
   my $self=shift;
-  my $randomize_order=shift;
   my @hostlist;
 
   # set state to waiting for all 
   map { $self->{DISPLAY}->set_state($_,'waiting') } @_;
-  if ($randomize_order) {
+  if ($self->{ORDERED}) {
+    @{$self->{TO_DO}}=@_;
+  } else {
     my %weight;
     map { $weight{$_}=rand; } @_;
     @{$self->{TO_DO}}=sort { $weight{$a} <=> $weight{$b} } @_;
-  } else {
-    @{$self->{TO_DO}}=@_;
   }
 }
 

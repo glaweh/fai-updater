@@ -5,7 +5,7 @@ use FAI::Updater;
 $Getopt::Std::STANDARD_HELP_VERSION=1;
 
 # options
-our ($opt_P,$opt_H,$opt_s,$opt_n,$opt_d,$opt_i);
+our ($opt_P,$opt_H,$opt_s,$opt_n,$opt_d,$opt_i,$opt_o);
 
 our $VERSION="0.9";
 
@@ -91,6 +91,7 @@ Usage: $0 [options] <netgroup|-H host1,host2,...>
   --version         print version
   -P                don't use fping to check availability before trying 
                     to update
+  -o                ordered mode: don't randomize order of hosts
   -i <state,...>    don't display hosts in the listed states
   -s <number>       number of updates running simultanously
   -d                debug mode: don't play around with the cursor position
@@ -103,17 +104,15 @@ EOF
 #  main routine
 # - - - - - - - - - - - - - - - - - - - -
 
-getopts('hH:Ps:ndi:');
+getopts('hH:Ps:ndi:o');
 # emit help message when no hosts/no netgroup is given on the command line
 (($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
 $netgroup=$ARGV[0] if $ARGV[0];
 
 my $display=FAI::Updater::Display::VT100->new;
-my $updater=FAI::Updater->new($display);
+my $updater=FAI::Updater->new(DISPLAY=>$display,PING=>!$opt_P,DRYRUN=>$opt_n,ORDERED=>$opt_o);
 $updater->max_simultanous($opt_s) if $opt_s;
-my @all_hosts = ( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
-$updater->init_hostlist(1,@all_hosts);
-$opt_n and $updater->dryrun(1);
+$updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
 $opt_d and $display->debug(1);
 $opt_i and $display->hide_states(split(/,/,$opt_i));
 $display->enable();
