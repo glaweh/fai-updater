@@ -20,10 +20,10 @@ sub DESTROY {
 
 sub set_state {
   my ($self,$host,$state)=(shift,shift,shift);
-  my $oldstate=$self->{STATE}->{$host};
+  my $oldstate=$self->{STATE}->{$host} || 'none';
   $self->SUPER::set_state($host,$state);
-  unless (defined $oldstate and ($state eq $oldstate)) {
-    print {$self->{FH}} "".strftime("%H:%M:%S",localtime)." $host ($state)\n";
+  unless ($state eq $oldstate) {
+    print {$self->{FH}} "".strftime("%H:%M:%S",localtime)." $host $oldstate -> $state\n";
   }
 }
 
