@@ -76,7 +76,7 @@ my $statusbar=$cui->add('Statusbar','Window',
 	-y=>$cui->height()-1,
 	-width=>$updater_win->width());
 # hotkey descriptions
-$statusbar->add(undef,'Label',-text=>'<^q>-quit');
+$statusbar->add(undef,'Label',-text=>'q:Quit s:Shutdown');
 # Status
 $statusbar->add(undef,'Label',-text=>'Status: ',
 	-x=>-21);
@@ -90,8 +90,8 @@ $statusdisplay=$statusbar->add('statusdisplay','Label',
 	-bg=>'red');
 	
 $updater_win->focus();
-$cui->set_binding( \&quit, "\cQ");
-$cui->set_binding( \&shutdown_update, "\cS");
+$cui->set_binding( \&quit, "q");
+$cui->set_binding( \&shutdown_update, "s");
 
 # create logdir
 my $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
