@@ -23,6 +23,7 @@ sub new {
   $self->{DRYRUN}=0;
   $self->{TO_DO}=();
   $self->{MAX_SIMULTANOUS}=4;
+  $self->{PING}=1;
   bless($self,$class);
   return $self;
 }
@@ -36,6 +37,24 @@ sub dryrun {
 sub start_one {
   my ($self,$host)=(shift,shift);
   my $command = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
+  
+  if ($self->{PING}) {
+    # try to ping the machine before update
+    if (my $pid=fork) {
+      waitpid($pid,0);
+      my $returncode=($? >> 8);
+      if ($returncode != 0) {
+        # host is unreachable if fping doesn't return 0
+        $self->{DISPLAY}->set_state($host,'unreachable');
+        return;
+      }
+    } else {
+      die "cannot fork: $!" unless defined $pid;
+      #don't clutter the ouput
+      open STDIN,'/dev/null'; open STDERR,'>/dev/null'; open STDOUT,'>/dev/null';
+      exec '/usr/bin/fping','-q',$host;
+    }
+  }
   
   if (my $pid=fork) {
     $self->{HOSTPID}->{$host} = $pid;
@@ -72,44 +91,17 @@ sub check_logfile {
 
 sub init_hostlist {
   my $self=shift;
-  my $use_fping=shift;
   my $randomize_order=shift;
   my @hostlist;
-  if ($use_fping) {
-    # preprocess with fping
-    die "can't fork fping" unless 
-      open2(\*FROM_FPING,\*TO_FPING,"LC_ALL=C /usr/bin/fping -u 2>&1");
-    map { print TO_FPING "$_\n" } @_;
-    close TO_FPING;
-    # get and postprocess fping output
-    my %unreachable; # a hash for "grep"
-    open(LOG,">".$self->{LOGDIR}."/FPING");
-    while (<FROM_FPING>) {
-      print LOG $_;
-      chomp;
-      # treat unresolvable hosts as unreachable
-      s/^(\S+) address not found$/$1/;
-      # skip evything else
-      /\s/ and next;
-      $unreachable{$_}=1;
-      $self->{DISPLAY}->set_state($_,'unreachable');
-    }
-    close FROM_FPING;
-    close LOG;
-    # filter out unreachable hosts from the to-do list
-    @hostlist=grep(! exists($unreachable{$_}),@_);
-  } else {
-    # no fping, take hostlist as-is
-    @hostlist=@_;
-  }
+
   # set state to waiting for all 
-  map { $self->{DISPLAY}->set_state($_,'waiting') } @hostlist;
+  map { $self->{DISPLAY}->set_state($_,'waiting') } @_;
   if ($randomize_order) {
     my %weight;
-    map { $weight{$_}=rand; } @hostlist;
-    @{$self->{TO_DO}}=sort { $weight{$a} <=> $weight{$b} } @hostlist;
+    map { $weight{$_}=rand; } @_;
+    @{$self->{TO_DO}}=sort { $weight{$a} <=> $weight{$b} } @_;
   } else {
-    @{$self->{TO_DO}}=@hostlist;
+    @{$self->{TO_DO}}=@_;
   }
 }
 

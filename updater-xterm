@@ -112,7 +112,7 @@ my $display=FAI::Updater::Display::VT100->new;
 my $updater=FAI::Updater->new($display);
 $updater->max_simultanous($opt_s) if $opt_s;
 my @all_hosts = ( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
-$updater->init_hostlist(! $opt_P,1,@all_hosts);
+$updater->init_hostlist(1,@all_hosts);
 $opt_n and $updater->dryrun(1);
 $opt_d and $display->debug(1);
 $opt_i and $display->hide_states(split(/,/,$opt_i));
