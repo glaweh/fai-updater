@@ -1,7 +1,7 @@
 package FAI::Updater;
 use strict;
 use warnings;
-use POSIX qw(:sys_wait_h strftime);
+use POSIX qw(:sys_wait_h);
 use IPC::Open2;
 our @states = qw(unreachable error unfinished empty success running started waiting);
 #   unreachable - host didn't ping
@@ -23,7 +23,6 @@ sub new {
 
 sub _init {
   my $self=shift;
-  $self->{LOGDIR}="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
   $self->{HOSTPID}={};
   $self->{DRYRUN}=0;
   $self->{TO_DO}=();
@@ -32,10 +31,10 @@ sub _init {
   $self->{ORDERED}=0;
   my %dummy=(@_);
   map { $self->{$_}=$dummy{$_} }keys %dummy;
-  $self->{COMMAND} = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
-  die "logdir".$self->{LOGDIR}." already exists !" if -d $self->{LOGDIR};
-  die "can't create logdir ".$self->{LOGDIR} unless mkdir $self->{LOGDIR};
   die "I need a DISPLAY" unless $self->{DISPLAY};
+  die "I need a LOGDIR" unless $self->{LOGDIR};
+  die "logdir ".$self->{LOGDIR}." doesn't exist !" unless -d $self->{LOGDIR};
+  $self->{COMMAND} = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
 }
 
 sub _start_one {
