@@ -73,6 +73,8 @@ sub check_logfile {
 sub init_hostlist {
   my $self=shift;
   my $use_fping=shift;
+  my $randomize_order=shift;
+  my @hostlist;
   if ($use_fping) {
     # preprocess with fping
     die "can't fork fping" unless 
@@ -95,13 +97,20 @@ sub init_hostlist {
     close FROM_FPING;
     close LOG;
     # filter out unreachable hosts from the to-do list
-    @{$self->{TO_DO}}=grep(! exists($unreachable{$_}),@_);
+    @hostlist=grep(! exists($unreachable{$_}),@_);
   } else {
     # no fping, take hostlist as-is
-    @{$self->{TO_DO}}=@_;
+    @hostlist=@_;
   }
   # set state to waiting for all 
-  map { $self->{DISPLAY}->set_state($_,'waiting') } @{$self->{TO_DO}};
+  map { $self->{DISPLAY}->set_state($_,'waiting') } @hostlist;
+  if ($randomize_order) {
+    my %weight;
+    map { $weight{$_}=rand; } @hostlist;
+    @{$self->{TO_DO}}=sort { $weight{$a} <=> $weight{$b} } @hostlist;
+  } else {
+    @{$self->{TO_DO}}=@hostlist;
+  }
 }
 
 sub run {
