@@ -33,16 +33,14 @@ EOF
 }
 
 sub updater_cb() {
-	$updater->run();
+	unless ($updater->run()) {
+		exit(0) unless ($updater->max_simultanous());
+	}
 }
 
-sub exit_dialog() {
-	$cui->disable_timer('updater');
-	my $return=$cui->dialog(
-		-message=>'Do you really want to exit',
-		-title=>'Are you sure?',
-		-buttons=>['yes','no']);
-	exit(0) if $return;
+sub exit_function() {
+	$cui->status("shutting down...");
+	$updater->max_simultanous(0);
 }
 # - - - - - - - - - - - - - - - - - - - -
 #  main routine
@@ -55,7 +53,7 @@ $netgroup=$ARGV[0] if $ARGV[0];
 
 #initialize Curses
 $cui=new Curses::UI(-color_support=>1, -clear_on_exit=>1);
-$cui->set_binding( \&exit_dialog, "\cQ");
+$cui->set_binding( \&exit_function, "\cQ");
 
 # create logdir
 my $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
