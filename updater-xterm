@@ -5,7 +5,7 @@ use FAI::Updater;
 $Getopt::Std::STANDARD_HELP_VERSION=1;
 
 # options
-our ($opt_h,$opt_P,$opt_H,$opt_s,$opt_n,$opt_d,$opt_i,$opt_v);
+our ($opt_P,$opt_H,$opt_s,$opt_n,$opt_d,$opt_i);
 
 our $VERSION="0.9";
 
@@ -87,8 +87,8 @@ sub HELP_MESSAGE {
   print $FH <<EOF
   
 Usage: $0 [options] <netgroup|-H host1,host2,...>
-  -h|--help         display this help message
-  -v|--version      print version
+  --help            display this help message
+  --version         print version
   -P                don't use fping to check availability before trying 
                     to update
   -i <state,...>    don't display hosts in the listed states
@@ -103,9 +103,8 @@ EOF
 #  main routine
 # - - - - - - - - - - - - - - - - - - - -
 
-getopts('hH:Ps:ndi:v');
-$opt_h and HELP_MESSAGE(*STDERR) and exit(0);
-$opt_v and VERSION_MESSAGE(*STDERR) and exit(0);
+getopts('hH:Ps:ndi:');
+# emit help message when no hosts/no netgroup is given on the command line
 (($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
 $netgroup=$ARGV[0] if $ARGV[0];
 
