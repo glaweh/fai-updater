@@ -94,8 +94,6 @@ sub init_hostlist {
   my $self=shift;
   my @hostlist;
 
-  # set state to waiting for all 
-  map { $self->{DISPLAY}->set_state($_,'waiting') } @_;
   if ($self->{ORDERED}) {
     @{$self->{TO_DO}}=@_;
   } else {
@@ -103,6 +101,8 @@ sub init_hostlist {
     map { $weight{$_}=rand; } @_;
     @{$self->{TO_DO}}=sort { $weight{$a} <=> $weight{$b} } @_;
   }
+  # set state to waiting for all 
+  map { $self->{DISPLAY}->set_state($_,'waiting') } @{$self->{TO_DO}};
 }
 
 sub run {
