@@ -146,24 +146,21 @@ sub new {
 sub _init {
   my $self=shift;
   $self->{STATUS}={};
-  $self->{ENABLED}=0;
+  $self->{NEXT}=undef;
   my %dummy=(@_);
   map { $self->{$_}=$dummy{$_} } keys %dummy;
 }
 
-sub enable {
-  my $self=shift;
-  $self->{ENABLED}=1;
-}
-
-sub disable {
-  my $self=shift;
-  $self->{ENABLED}=0;
-}
-
 sub set_state {
-  my ($self,$key,$val) = (shift,shift,shift);
-  $self->{STATUS}->{$key}=$val;
+  my $self=shift;
+  $self->{NEXT}->set_state(@_) if defined $self->{NEXT};
+  my ($host,$state)=(shift,shift);
+  $self->{STATUS}->{$host}=$state;
 }
 
+sub append {
+  my $self=shift;
+  $self->{NEXT}->append(@_) if defined $self->{NEXT};
+  $self->{NEXT}=shift;
+}
 1; # so the require or use succeeds

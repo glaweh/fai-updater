@@ -22,29 +22,27 @@ sub _init {
   $self->{HIDE}={};
   $self->{TITLE}="define a real title";
   $self->SUPER::_init(@_);
-}
-
-sub enable {
-  my $self=shift;
-  #set the cursor to 1,1 and clear everything below 
-  $self->{DEBUG} or print $CSI."f$CSI"."0J" ;
-  print $self->{TITLE}."\nStates: ";
-  # color legend
-  foreach (@FAI::Updater::states) {
-    print "" . (defined $scolor{$_} ? $scolor{$_} : '' ) . "$_$DEFCOLOR ";
-  }
-  print "\n";
-  $self->SUPER::enable;
-  $self->show();
+  $self->{ENABLED}=0;
 }
 
 sub set_state {
   my $self=shift;
   $self->SUPER::set_state(@_);
-  $self->show() if ($self->{ENABLED});
+  my ($host,$state)=(shift,shift);
+  if ($self->{ENABLED}) {
+    $self->_show()
+  } elsif ($state ne 'waiting') {
+    $self->{ENABLED}=1;
+    $self->{DEBUG} or print $CSI."f$CSI"."0J";
+    print $self->{TITLE}."\nStates: ";
+    foreach (@FAI::Updater::states) {
+      print "".(defined $scolor{$_} ? $scolor{$_} : '' )."$_$DEFCOLOR ";
+    }
+    print "\n";
+  }
 }
 
-sub show {
+sub _show {
   my $self=shift;
   # set the cursor to 3,1 and clear everything below
   my $result;

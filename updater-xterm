@@ -44,8 +44,6 @@ my $updater=FAI::Updater->new(DISPLAY=>$display,PING=>!$opt_P,DRYRUN=>$opt_n,ORD
 $updater->max_simultanous($opt_s) if $opt_s;
 $updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
 $opt_i and $display->hide_states(split(/,/,$opt_i));
-$display->enable();
 do {
   sleep 1;
 } until ($updater->run()==0);
-$display->disable();
