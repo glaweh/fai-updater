@@ -48,5 +48,4 @@ $display->enable();
 do {
   sleep 1;
 } until ($updater->run()==0);
-
 $display->disable();
