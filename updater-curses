@@ -38,7 +38,7 @@ sub updater_cb() {
 	}
 }
 
-sub exit_function() {
+sub shutdown() {
 	$cui->status("shutting down...");
 	$updater->max_simultanous(0);
 }
@@ -53,7 +53,7 @@ $netgroup=$ARGV[0] if $ARGV[0];
 
 #initialize Curses
 $cui=new Curses::UI(-color_support=>1, -clear_on_exit=>1);
-$cui->set_binding( \&exit_function, "\cQ");
+$cui->set_binding( \&shutdown, "\cQ");
 
 # create logdir
 my $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
