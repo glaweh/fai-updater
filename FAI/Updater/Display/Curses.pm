@@ -37,7 +37,8 @@ sub _init {
 			-x=>$sofar,
 			-border=>1,
 			-title=>$_,
-			-bg=>$self->{COLORS}->{$_}
+			-bg=>$self->{COLORS}->{$_},
+			-vscrollbar=>1
 			);
 		$self->{COL}->[$idx]->onChange($self->{SELECT}) if ($self->{SELECT});
 		# change default bindings
