@@ -3,6 +3,7 @@ use strict;
 use Getopt::Std;
 use FAI::Updater;
 use FAI::Updater::Display::VT100;
+use FAI::Updater::Display::Logfile;
 use POSIX qw(strftime);
 $Getopt::Std::STANDARD_HELP_VERSION=1;
 
@@ -45,6 +46,7 @@ my $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
 die "can't create logdir $logdir" unless mkdir $logdir;
 
 my $display=FAI::Updater::Display::VT100->new(TITLE=>"fai-updater, netgroup $netgroup",DEBUG=>$opt_d);
+$display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
 my $updater=FAI::Updater->new(DISPLAY=>$display,PING=>!$opt_P,DRYRUN=>$opt_n,ORDERED=>$opt_o,LOGDIR=>$logdir);
 $updater->max_simultanous($opt_s) if $opt_s;
 $updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
