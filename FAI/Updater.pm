@@ -139,7 +139,7 @@ sub new {
   my $class = shift;
   my $self = {};
   bless($self,$class);
-  $self->_init;
+  $self->_init(@_);
   return($self);
 }
 
@@ -147,6 +147,8 @@ sub _init {
   my $self=shift;
   $self->{STATUS}={};
   $self->{ENABLED}=0;
+  my %dummy=(@_);
+  map { $self->{$_}=$dummy{$_} } keys %dummy;
 }
 
 sub enable {
