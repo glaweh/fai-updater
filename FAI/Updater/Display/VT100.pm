@@ -47,9 +47,9 @@ sub _show {
   # set the cursor to 3,1 and clear everything below
   my $result;
   $self->{DEBUG} or $result=$CSI . "3f$CSI" . "0J" ;
-  foreach (sort keys %{$self->{STATUS}}) {
+  foreach (sort keys %{$self->{STATE}}) {
     # the current status
-    my $s=$self->{STATUS}->{$_};
+    my $s=$self->{STATE}->{$_};
     # allow ignoring hosts in some states
     next if exists $self->{HIDE}->{$s};
     # colorize hostname if there's a color corresponding the state

@@ -145,7 +145,7 @@ sub new {
 
 sub _init {
   my $self=shift;
-  $self->{STATUS}={};
+  $self->{STATE}={};
   $self->{NEXT}=undef;
   my %dummy=(@_);
   map { $self->{$_}=$dummy{$_} } keys %dummy;
@@ -155,7 +155,7 @@ sub set_state {
   my $self=shift;
   $self->{NEXT}->set_state(@_) if defined $self->{NEXT};
   my ($host,$state)=(shift,shift);
-  $self->{STATUS}->{$host}=$state;
+  $self->{STATE}->{$host}=$state;
 }
 
 sub append {
