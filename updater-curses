@@ -87,7 +87,7 @@ sub viewer_on() {
 		-wrapping=>1,
 		-border=>1,
 		-title=>$host,
-		-text=>join("\n",<$log>));
+		-text=>join("",<$log>));
 	close $log;
 	$viewer->focus();
 }
