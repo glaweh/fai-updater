@@ -65,6 +65,8 @@ sub select_handler() {
 	viewer_on($sel);
 }
 
+my $log;
+my $viewer;
 sub viewer_on() {
 	my $host=shift;
 	# a logviewer makes no sense without any log to look at
@@ -80,24 +82,33 @@ sub viewer_on() {
 		-height=>$cui->height()-(1+$updater_win->{-height}),
 		-y=>$updater_win->{-height}
 		);
-	my $log;
 	open $log,"$logdir/$host";
-	my $viewer=$viewer_win->add('Viewer','TextViewer',
+	$viewer=$viewer_win->add('Viewer','TextViewer',
 		-vscrollbar=>1,
 		-wrapping=>1,
 		-border=>1,
 		-title=>$host,
 		-text=>join("",<$log>));
-	close $log;
 	$viewer->focus();
+	$cui->set_timer('viewer-update',\&viewer_update);
 }
 
 sub viewer_off() {
+	$cui->delete_timer('viewer-update');
+	close $log;
 	$cui->delete("ViewerWin");
 	$updater_win->{-height}=$cui->height()-1;
 	$updater_win->layout();
 	$updater_win->focus();
 	$cui->draw();
+}
+
+sub viewer_update() {
+	my $newtext=join("",<$log>);
+	if ($newtext) {
+		$viewer->{-text}.=$newtext;
+		$viewer->draw();
+	}
 }
 
 # - - - - - - - - - - - - - - - - - - - -
