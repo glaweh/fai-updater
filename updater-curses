@@ -15,6 +15,8 @@ our $VERSION="0.1";
 my $netgroup='hand-defined';
 my $cui;
 my $updater;
+my $statusdisplay;
+my $quit=0;
 
 sub HELP_MESSAGE {
   my $FH = shift;
@@ -31,14 +33,24 @@ EOF
 }
 
 sub updater_cb() {
-	unless ($updater->run()) {
-		exit(0) unless ($updater->max_simultanous());
+	if ($updater->run()) {
+	} elsif ($quit) {
+		exit(0);
+		$statusdisplay->draw();
 	}
 }
 
-sub shutdown() {
-	$cui->status("shutting down...");
-	$updater->max_simultanous(0);
+sub quit() {
+	shutdown_update();
+	$quit=1;
+}
+
+sub shutdown_update() {
+	if ($updater->max_simultanous() > 0) {
+		$statusdisplay->text("shutting down...");
+		$statusdisplay->draw();
+		$updater->max_simultanous(0);
+	}
 }
 # - - - - - - - - - - - - - - - - - - - -
 #  main routine
@@ -51,13 +63,37 @@ $netgroup=$ARGV[0] if $ARGV[0];
 
 #initialize Curses
 $cui=new Curses::UI(-color_support=>1, -clear_on_exit=>1);
-$cui->set_binding( \&shutdown, "\cQ");
+#create window for the updater display, leave space for the statusbar
+my $updater_win=$cui->add('UpdateColumns','Window',-height=>$cui->height()-1);
+#create the updater display
+my $display=FAI::Updater::Display::Curses->new(WIN=>$updater_win);
+
+# build up the statusbar. as the updater display is now correctly layouted, 
+# use its width for proper alignment
+my $statusbar=$cui->add('Statusbar','Window', 
+	-y=>$cui->height()-1,
+	-width=>$updater_win->width());
+# hotkey descriptions
+$statusbar->add(undef,'Label',-text=>'<^q>-quit');
+# Status
+$statusbar->add(undef,'Label',-text=>'Status: ',
+	-x=>-21);
+$statusdisplay=$statusbar->add('statusdisplay','Label',
+	-text=>'processing',
+	-x=>-1,
+	-width=>20,
+	-paddingspaces=>1,
+	-textalignment=>'middle',
+	-sbborder=>1,
+	-bg=>'red');
+	
+$updater_win->focus();
+$cui->set_binding( \&quit, "\cQ");
+$cui->set_binding( \&shutdown_update, "\cS");
 
 # create logdir
 my $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
 die "can't create logdir $logdir" unless mkdir $logdir;
-
-my $display=FAI::Updater::Display::Curses->new(CUI=>$cui);
 $display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
 $updater=FAI::Updater->new(DISPLAY=>$display,PING=>0,DRYRUN=>$opt_n,ORDERED=>$opt_o,LOGDIR=>$logdir);
 $updater->max_simultanous($opt_s) if $opt_s;

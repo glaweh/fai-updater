@@ -22,9 +22,10 @@ sub _init {
 		waiting=>4
 	};
 	$self->SUPER::_init(@_);
-	die "I need a CUI" unless $self->{CUI};
-	$self->{WIN}=$self->{CUI}->add('mainwindow','Window');
+	die "I need a WIN" unless $self->{WIN};
 	my $hostwidth=POSIX::floor($self->{WIN}->width()/scalar(@{$self->{TITLES}}));
+	$self->{WIN}->{-width}=$hostwidth*scalar(@{$self->{TITLES}});
+	$self->{WIN}->layout();
 	my $sofar=0;
 	my $idx=0;
 	$self->{COL}=[];
@@ -38,7 +39,6 @@ sub _init {
 			);
 		$idx++;$sofar+=$hostwidth;
 	}
-	$self->{WIN}->focus();
 }
 
 sub set_state {
