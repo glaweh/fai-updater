@@ -10,6 +10,7 @@ sub _init {
   $self->SUPER::_init(@_);
   die "I need a FILENAME" unless $self->{FILENAME};
   open $self->{FH},">".$self->{FILENAME};
+  $self->{FH}->autoflush() if $self->{AUTOFLUSH};
 }
 
 sub DESTROY {
