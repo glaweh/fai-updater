@@ -1,0 +1,74 @@
+#! /usr/bin/perl -w
+use strict;
+use Getopt::Std;
+use FAI::Updater;
+use FAI::Updater::Display::Logfile;
+use FAI::Updater::Display::Curses;
+use POSIX qw(strftime);
+$Getopt::Std::STANDARD_HELP_VERSION=1;
+
+# options
+our ($opt_P,$opt_H,$opt_s,$opt_n,$opt_i,$opt_o);
+
+our $VERSION="0.1";
+
+my $netgroup='hand-defined';
+my $cui;
+my $updater;
+
+sub HELP_MESSAGE {
+  my $FH = shift;
+  print $FH <<EOF
+  
+Usage: $0 [options] <netgroup|-H host1,host2,...>
+  --help            display this help message
+  --version         print version
+  -P                don't use fping to check availability before trying 
+                    to update
+  -o                ordered mode: don't randomize order of hosts
+  -i <state,...>    don't display hosts in the listed states
+  -s <number>       number of updates running simultanously
+  -n                dryrun mode: use a dummy-script instead of really 
+                    contacting the clients
+EOF
+}
+
+sub updater_cb() {
+	$updater->run();
+}
+
+sub exit_dialog() {
+	$cui->disable_timer('updater');
+	my $return=$cui->dialog(
+		-message=>'Do you really want to exit',
+		-title=>'Are you sure?',
+		-buttons=>['yes','no']);
+	exit(0) if $return;
+}
+# - - - - - - - - - - - - - - - - - - - -
+#  main routine
+# - - - - - - - - - - - - - - - - - - - -
+
+getopts('hH:Ps:ni:o');
+# emit help message when no hosts/no netgroup is given on the command line
+(($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
+$netgroup=$ARGV[0] if $ARGV[0];
+
+#initialize Curses
+$cui=new Curses::UI(-color_support=>1, -clear_on_exit=>1);
+$cui->set_binding( \&exit_dialog, "\cQ");
+
+# create logdir
+my $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
+die "can't create logdir $logdir" unless mkdir $logdir;
+
+my $display=FAI::Updater::Display::Curses->new(CUI=>$cui);
+$display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
+$updater=FAI::Updater->new(DISPLAY=>$display,PING=>!$opt_P,DRYRUN=>$opt_n,ORDERED=>$opt_o,LOGDIR=>$logdir);
+$updater->max_simultanous($opt_s) if $opt_s;
+$updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
+$opt_i and $display->hide_states(split(/,/,$opt_i));
+
+$cui->draw();
+$cui->set_timer('updater',\&updater_cb);
+$cui->mainloop;
