@@ -1,5 +1,7 @@
 package FAI::Updater::Display::Curses;
+use Curses;
 use Curses::UI;
+use Curses::UI::Common;
 use FAI::Updater;
 use base qw(FAI::Updater::Display);
 	
@@ -38,6 +40,13 @@ sub _init {
 			-bg=>$self->{COLORS}->{$_}
 			);
 		$self->{COL}->[$idx]->onChange($self->{SELECT}) if ($self->{SELECT});
+		# change default bindings
+		$self->{COL}->[$idx]->clear_binding('option-select');
+		$self->{COL}->[$idx]->clear_binding('loose-focus');
+		$self->{COL}->[$idx]->set_binding('option-select',KEY_ENTER,KEY_SPACE);
+		$self->{COL}->[$idx]->set_binding('loose-focus',KEY_RIGHT,CUI_TAB,KEY_BTAB);
+		$self->{COL}->[$idx]->set_binding('focus-prev',KEY_LEFT);
+
 		$idx++;$sofar+=$hostwidth;
 	}
 }
