@@ -7,6 +7,8 @@ $Getopt::Std::STANDARD_HELP_VERSION=1;
 # options
 our ($opt_h,$opt_P,$opt_H,$opt_s,$opt_n,$opt_d,$opt_i);
 
+our $VERSION="0.9";
+
 my $netgroup='hand-defined';
 
 { package FAI::Updater::Display::VT100;
