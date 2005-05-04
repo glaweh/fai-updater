@@ -133,7 +133,7 @@ my $statusbar=$cui->add('Statusbar','Window',
 	-y=>$cui->height()-1,
 	-width=>$updater_win->width());
 # hotkey descriptions
-$statusbar->add(undef,'Label',-text=>'q:Quit c:Cancel');
+$statusbar->add(undef,'Label',-text=>'q:Quit c:Cancel <ENTER>:Open Viewer <ESC>:Close Viewer');
 # Status
 $statusbar->add(undef,'Label',-text=>'Status: ',
 	-x=>-21);
