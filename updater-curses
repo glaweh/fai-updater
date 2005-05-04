@@ -50,9 +50,9 @@ sub quit() {
 	$quit=1;
 }
 
-sub shutdown_update() {
+sub cancel_update() {
 	if ($updater->max_simultanous() > 0) {
-		$statusdisplay->text("shutting down...");
+		$statusdisplay->text("cancelling...");
 		$statusdisplay->draw();
 		$updater->max_simultanous(0);
 	}
@@ -133,7 +133,7 @@ my $statusbar=$cui->add('Statusbar','Window',
 	-y=>$cui->height()-1,
 	-width=>$updater_win->width());
 # hotkey descriptions
-$statusbar->add(undef,'Label',-text=>'q:Quit s:Shutdown');
+$statusbar->add(undef,'Label',-text=>'q:Quit c:Cancel');
 # Status
 $statusbar->add(undef,'Label',-text=>'Status: ',
 	-x=>-21);
@@ -148,7 +148,7 @@ $statusdisplay=$statusbar->add('statusdisplay','Label',
 	
 $updater_win->focus();
 $cui->set_binding( \&quit, "q");
-$cui->set_binding( \&shutdown_update, "s");
+$cui->set_binding( \&cancel_update, "c");
 $cui->set_binding( \&viewer_off, "\e");
 
 # create logdir
