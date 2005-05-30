@@ -46,7 +46,7 @@ sub updater_cb() {
 }
 
 sub quit() {
-	shutdown_update();
+	cancel_update();
 	$quit=1;
 }
 
