@@ -1,3 +1,5 @@
+You get basic usage information running 'updater-curses --help'.
+
 Connecting to the clients:
 the script libexec/faiupdate is used to connect _non-interactively_ to the
 clients and start an update there, forwarding stdout to the fai-updater.
