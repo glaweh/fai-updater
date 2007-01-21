@@ -101,7 +101,7 @@ sub _check_logfile {
     if (/Fully Automatic Installation/) {
       $state=(exists $self->{HOSTPID}->{$host} ? 'running' : 'unfinished');
     }
-    if (/An error occured/ || /Skipping update/) {
+    if (/An error occured/ || /Skipping update/ || /ERRORS found in log files. See/) {
       $state='error';
       last;
     }
