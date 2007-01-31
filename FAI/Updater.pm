@@ -105,7 +105,7 @@ sub _check_logfile {
       $state='error';
       last;
     }
-    if (/Sav\S+ log files/) {
+    if (/Sav\S+ log files/ || /Calling task_savelog/) {
       $state='success';
     }
   }
