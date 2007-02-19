@@ -18,3 +18,5 @@ TODO for FAI-Updater - 02/19/2007
   column->FIXED
   - this exception may also occur during normal operation
     sometimes
+
+- build debian-package for convient installation
