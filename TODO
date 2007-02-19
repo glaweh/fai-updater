@@ -1,0 +1,10 @@
+TODO for FAI-Updater - 02/19/2007
+---------------------------------
+
+- ask for additional confirmation on pressing "q" for exit
+  (Updater quits on typing "q" now, letting all pending
+   task finish though)
+
+- causes perl string-exception on pressing "Return" in empty
+  column; this exception may also occur during normal operation
+  sometimes
