@@ -137,7 +137,9 @@ sub viewer_update() {
 #  main routine
 # - - - - - - - - - - - - - - - - - - - -
 
-getopts('hH:s:no');
+# Adrian: also print help-message once getopts returns an error
+# (should also subpress warnings of getopts about "Unknown options" though but how ?!)
+getopts('hH:s:no') or HELP_MESSAGE(*STDERR) and exit (1);
 # emit help message when no hosts/no netgroup is given on the command line
 (($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
 $netgroup=$ARGV[0] if $ARGV[0];
