@@ -88,6 +88,9 @@ my $log;
 my $viewer;
 sub viewer_on() {
 	my $host=shift;
+	# Adrian: check whether host is defined before looking for logfile
+	# (avoid perl-exception in next line)
+	if (!defined ($host)) { return }
 	# a logviewer makes no sense without any log to look at
 	return unless -f "$logdir/$host";
 	
