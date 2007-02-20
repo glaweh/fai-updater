@@ -65,8 +65,16 @@ sub updater_cb() {
 }
 
 sub quit() {
-	cancel_update();
-	$quit=1;
+	# Adrian: add quit-confirm dialog
+	my $return = $cui->dialog(
+                        -message   => "Do you really want to quit ?",
+                        -title     => "Confirm quit",
+                        -buttons   => ['yes', 'no'],
+	);
+	if ($return) {
+		cancel_update();
+		$quit=1;
+	}
 }
 
 sub cancel_update() {

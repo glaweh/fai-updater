@@ -3,7 +3,7 @@ TODO for FAI-Updater - 02/19/2007
 
 - ask for additional confirmation on pressing "q" for exit
   (Updater quits on typing "q" now, letting all pending
-   task finish though)
+   task finish though)->FIXED
 
 - highlight complete column when selecting it with arrow-keys
 
