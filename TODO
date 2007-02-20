@@ -6,7 +6,7 @@ TODO for FAI-Updater - 02/19/2007
    task finish though)->FIXED
 
 - highlight complete column when selecting it with arrow-keys
-  - the original version did this, but the feature got lost somehow ?!?!
+  ->this is a terminal-issue: with xterm it works, with rxvt not
 
 - getopts can be confused easily:
 
