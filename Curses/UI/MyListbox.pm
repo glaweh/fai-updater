@@ -39,6 +39,7 @@ sub append {
 	my $self = shift;
 	my $value = shift;
 	push @{$self->{-values}},$value;
+	@{$self->{-values}}=sort @{$self->{-values}};
 	$self->draw();
 }
 
