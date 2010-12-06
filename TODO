@@ -21,3 +21,15 @@ TODO for FAI-Updater - 02/19/2007
     sometimes
 
 - build debian-package for convient installation
+
+- fai-updater can be confused when a host is specified
+  on the hostlist twice which can happen when it
+  belongs to two individual netgroups. it will
+  run "fai softupdate" twice and merge the log
+  files while the update will naturally abort on
+  one machine since another instance of fai
+  is already running (/var/run/fai/fai_softupdate_is_running
+  exists)
+
+- add possiblity to trigger sorting of hosts in
+  all lists (not just waiting queue)
