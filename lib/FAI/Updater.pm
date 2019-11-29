@@ -49,7 +49,6 @@ sub _init {
   $self->{HOSTPID}={};
   $self->{TO_DO}=();
   $self->{MAX_SIMULTANOUS}=4;
-  $self->{PING}=1;
   $self->{ORDERED}=0;
   $self->{COMMAND} = undef;
   my %dummy=(@_);
@@ -62,24 +61,6 @@ sub _init {
 
 sub _start_one {
   my ($self,$host)=(shift,shift);
-  
-  if ($self->{PING}) {
-    # try to ping the machine before update
-    if (my $pid=fork) {
-      waitpid($pid,0);
-      my $returncode=($? >> 8);
-      if ($returncode != 0) {
-        # host is unreachable if fping doesn't return 0
-        $self->{DISPLAY}->set_state($host,'unreachable');
-        return;
-      }
-    } else {
-      die "cannot fork: $!" unless defined $pid;
-      #don't clutter the ouput
-      open STDIN,'/dev/null'; open STDERR,'>/dev/null'; open STDOUT,'>/dev/null';
-      exec '/usr/bin/fping','-q',$host;
-    }
-  }
   
   if (my $pid=fork) {
     $self->{HOSTPID}->{$host} = $pid;
