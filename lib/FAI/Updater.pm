@@ -47,17 +47,17 @@ sub new {
 sub _init {
   my $self=shift;
   $self->{HOSTPID}={};
-  $self->{DRYRUN}=0;
   $self->{TO_DO}=();
   $self->{MAX_SIMULTANOUS}=4;
   $self->{PING}=1;
   $self->{ORDERED}=0;
+  $self->{COMMAND} = undef;
   my %dummy=(@_);
   map { $self->{$_}=$dummy{$_} }keys %dummy;
   die "I need a DISPLAY" unless $self->{DISPLAY};
   die "I need a LOGDIR" unless $self->{LOGDIR};
+  die "I need a COMMAND" unless $self->{COMMAND};
   die "logdir ".$self->{LOGDIR}." doesn't exist !" unless -d $self->{LOGDIR};
-  $self->{COMMAND} = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
 }
 
 sub _start_one {

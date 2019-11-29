@@ -190,7 +190,8 @@ $cui->set_binding( \&cancel_update, "c");
 $cui->set_binding( \&viewer_off, "\e");
 
 $display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
-$updater=FAI::Updater->new(DISPLAY=>$display,PING=>0,DRYRUN=>$opt_n,ORDERED=>$opt_o,LOGDIR=>$logdir);
+my $fai_update_command = ($opt_n ? "libexec/dryrun" : "libexec/faiupdate" );
+$updater=FAI::Updater->new(DISPLAY=>$display, PING=>0, COMMAND=>$fai_update_command, ORDERED=>$opt_o, LOGDIR=>$logdir);
 $updater->max_simultanous($opt_s) if $opt_s;
 $updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`libexec/get_hostlist $netgroup`));
 
