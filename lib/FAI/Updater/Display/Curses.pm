@@ -53,7 +53,7 @@ sub _init {
 	my $idx=0;
 	$self->{COL}=[];
 	foreach (@{$self->{TITLES}}) {
-		$self->{COL}->[$idx]=$self->{WIN}->add($_,'MyListbox',
+		$self->{COL}->[$idx]=$self->{WIN}->add($_,'FAI::Updater::Display::Curses::UI::FaiUpdaterListbox',
 			-width=>$hostwidth,
 			-x=>$sofar,
 			-border=>1,
