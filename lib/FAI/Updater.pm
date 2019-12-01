@@ -47,39 +47,20 @@ sub new {
 sub _init {
   my $self=shift;
   $self->{HOSTPID}={};
-  $self->{DRYRUN}=0;
   $self->{TO_DO}=();
   $self->{MAX_SIMULTANOUS}=4;
-  $self->{PING}=1;
   $self->{ORDERED}=0;
+  $self->{COMMAND} = undef;
   my %dummy=(@_);
   map { $self->{$_}=$dummy{$_} }keys %dummy;
   die "I need a DISPLAY" unless $self->{DISPLAY};
   die "I need a LOGDIR" unless $self->{LOGDIR};
+  die "I need a COMMAND" unless $self->{COMMAND};
   die "logdir ".$self->{LOGDIR}." doesn't exist !" unless -d $self->{LOGDIR};
-  $self->{COMMAND} = ($self->{DRYRUN} ? "libexec/dryrun" : "libexec/faiupdate" );
 }
 
 sub _start_one {
   my ($self,$host)=(shift,shift);
-  
-  if ($self->{PING}) {
-    # try to ping the machine before update
-    if (my $pid=fork) {
-      waitpid($pid,0);
-      my $returncode=($? >> 8);
-      if ($returncode != 0) {
-        # host is unreachable if fping doesn't return 0
-        $self->{DISPLAY}->set_state($host,'unreachable');
-        return;
-      }
-    } else {
-      die "cannot fork: $!" unless defined $pid;
-      #don't clutter the ouput
-      open STDIN,'/dev/null'; open STDERR,'>/dev/null'; open STDOUT,'>/dev/null';
-      exec '/usr/bin/fping','-q',$host;
-    }
-  }
   
   if (my $pid=fork) {
     $self->{HOSTPID}->{$host} = $pid;

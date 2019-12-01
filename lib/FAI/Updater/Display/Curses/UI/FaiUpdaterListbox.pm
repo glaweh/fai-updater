@@ -1,7 +1,7 @@
-package Curses::UI::MyListbox;
+package FAI::Updater::Display::Curses::UI::FaiUpdaterListbox;
 # 
-#     MyListBox.pm -- a Curses::UI::Listbox with the capability to add and 
-#                     remove elements at runtime
+#     FaiUpdaterListbox.pm -- a Curses::UI::Listbox with the
+#       capability to add and remove elements at runtime
 #     
 #     fai-updater - start and supervise fai softupdates on many hosts
 #     Copyright (C) 2004-2006  Henning Glawe <glaweh@debian.org>
