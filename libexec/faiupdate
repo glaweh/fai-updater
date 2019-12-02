@@ -22,7 +22,7 @@
 # 
 # 
 if [ -z "$1" ]; then
-  echo "usage: $0 <hostname>"
+  echo "usage: $0 <hostname>" >&2
   exit 1
 fi
 
