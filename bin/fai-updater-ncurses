@@ -32,7 +32,6 @@ our ($opt_h, $opt_version, $opt_H, $opt_s, $opt_n, $opt_o);
 
 our $VERSION="0.1";
 
-my $netgroup='hand-defined';
 my $cui;
 my $updater;
 my $statusdisplay;
@@ -183,9 +182,12 @@ if ($opt_version) {
     exit(0);
 };
 
-# emit help message when no hosts/no netgroup is given on the command line
-(($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
-$netgroup=$ARGV[0] if $ARGV[0];
+my @hostlist;
+if (defined $opt_H) {
+    @hostlist = split(/,/, $opt_H);
+} else {
+    @hostlist = split(/\s/,`$libexec_dir/get_hostlist $ARGV[0]`) if (defined $ARGV[0]);
+};
 
 # create logdir
 $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
@@ -226,7 +228,7 @@ $display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDA
 my $fai_update_command = ($opt_n ? "$libexec_dir/dryrun" : "$libexec_dir/faiupdate" );
 $updater=FAI::Updater->new(DISPLAY=>$display, COMMAND=>$fai_update_command, ORDERED=>$opt_o, LOGDIR=>$logdir);
 $updater->max_simultanous($opt_s) if $opt_s;
-$updater->init_hostlist( $opt_H ? split(/,/,$opt_H) : split(/\s/,`$libexec_dir/get_hostlist $netgroup`));
+$updater->init_hostlist(@hostlist);
 
 $cui->draw();
 $cui->set_timer('updater',\&updater_cb);
