@@ -36,6 +36,10 @@ our @states = qw(unreachable error unfinished empty success running started wait
 #   started     - update has been started
 #   waiting     - update not yet started
 
+our %DEFAULT = (
+    MAX_SIMULTANEOUS => 4,
+);
+
 sub new {
   my $class = shift;
   my $self = {};
@@ -48,7 +52,7 @@ sub _init {
   my $self=shift;
   $self->{HOSTPID}={};
   $self->{TO_DO}=();
-  $self->{MAX_SIMULTANOUS}=4;
+  $self->{MAX_SIMULTANOUS}=$DEFAULT{MAX_SIMULTANEOUS};
   $self->{ORDERED}=0;
   $self->{COMMAND} = undef;
   my %dummy=(@_);
