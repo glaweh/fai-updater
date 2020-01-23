@@ -21,15 +21,14 @@
 use FindBin;
 use lib "$FindBin::RealBin/../lib";
 use strict;
-use Getopt::Std;
+use Getopt::Long;
 use FAI::Updater;
 use FAI::Updater::Display::Logfile;
 use FAI::Updater::Display::Curses;
 use POSIX qw(strftime);
-$Getopt::Std::STANDARD_HELP_VERSION=1;
 
 # options
-our ($opt_H,$opt_s,$opt_n,$opt_o);
+our ($opt_h, $opt_version, $opt_H, $opt_s, $opt_n, $opt_o);
 
 our $VERSION="0.1";
 
@@ -56,6 +55,14 @@ Usage: $0 [options] <netgroup|-H host1,host2,...>
                     contacting the clients
 EOF
 }
+
+sub VERSION_MESSAGE {
+    my $FH = shift;
+    print $FH <<EOF
+$0 version $VERSION
+running under Perl version $^V.
+EOF
+};
 
 sub updater_cb() {
 	if ($updater->run()) {
@@ -150,7 +157,26 @@ sub viewer_update() {
 
 # Adrian: also print help-message once getopts returns an error
 # (should also subpress warnings of getopts about "Unknown options" though but how ?!)
-getopts('hH:s:no') or HELP_MESSAGE(*STDERR) and exit (1);
+Getopt::Long::Configure ("bundling");
+GetOptions(
+    'help|h' => \$opt_h,
+    'hosts|H=s' => \$opt_H,
+    'version' => \$opt_version,
+    'simultaneous|s=i' => \$opt_s,
+    'dryrun|n' => \$opt_n,
+    'ordered|o' => \$opt_o,
+) or HELP_MESSAGE(*STDERR) and exit (1);
+
+if ($opt_h) {
+    HELP_MESSAGE(*STDOUT);
+    exit(0);
+};
+
+if ($opt_version) {
+    VERSION_MESSAGE(*STDOUT);
+    exit(0);
+};
+
 # emit help message when no hosts/no netgroup is given on the command line
 (($#ARGV<0) and ! $opt_H) and HELP_MESSAGE(*STDERR) and exit(1);
 $netgroup=$ARGV[0] if $ARGV[0];

@@ -8,13 +8,6 @@ TODO for FAI-Updater - 02/19/2007
 - highlight complete column when selecting it with arrow-keys
   ->this is a terminal-issue: with xterm it works, with rxvt not
 
-- getopts can be confused easily:
-
-	"updater-curses -nonsense" will fail
-	but "updater-curses -nonsense blablubb" not
-
-  ->FIXED (getopts still annoys with its warnings though)
-
 - causes perl string-exception on pressing "Return" in empty
   column->FIXED
   - this exception may also occur during normal operation
