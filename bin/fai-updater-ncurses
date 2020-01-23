@@ -43,8 +43,8 @@ my $quit=0;
 my $libexec_dir = "$FindBin::RealBin/../libexec";
 
 sub HELP_MESSAGE {
-  my $FH = shift;
-  print $FH <<EOF
+    my $FH = shift;
+    print $FH <<EOF;
   
 Usage: $0 [options] <netgroup|-H host1,host2,...>
   --help            display this help message
