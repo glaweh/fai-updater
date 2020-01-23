@@ -49,14 +49,15 @@ sub HELP_MESSAGE {
 Usage: $0 [options] <netgroup|-H host1,host2,...>
 
 Help Options:
-  --help            display this help message
-  --version         print version
+  -h, --help                 display this help message
+  --version                  print version information
 
 Application Options:
-  -o                ordered mode: don't randomize order of hosts
-  -s <number>       number of updates running simultanously
-  -n                dryrun mode: use a dummy-script instead of really 
-                    contacting the clients
+  -o, --ordered              ordered mode: don't randomize order of hosts
+  -s, --simultaneous <NUM>   run updates on NUM hosts simultanously
+                             (default: $FAI::Updater::DEFAULT{MAX_SIMULTANEOUS})
+  -n, --dryrun               dryrun mode: use a dummy-script instead of
+                             really contacting the clients
 
 EOF
 }
