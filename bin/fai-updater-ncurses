@@ -28,7 +28,7 @@ use FAI::Updater::Display::Curses;
 use POSIX qw(strftime);
 
 # options
-our ($opt_h, $opt_version, $opt_H, $opt_s, $opt_n, $opt_o);
+our ($opt_h, $opt_version, $opt_s, $opt_n, $opt_o);
 
 our $VERSION="0.1";
 
@@ -45,7 +45,7 @@ sub HELP_MESSAGE {
     my $FH = shift;
     print $FH <<EOF;
   
-Usage: $0 [options] <netgroup|-H host1,host2,...>
+Usage: $0 [options] <\@netgroup|host [...]>
 
 Help Options:
   -h, --help                 display this help message
@@ -165,7 +165,6 @@ sub viewer_update() {
 Getopt::Long::Configure ("bundling");
 GetOptions(
     'help|h' => \$opt_h,
-    'hosts|H=s' => \$opt_H,
     'version' => \$opt_version,
     'simultaneous|s=i' => \$opt_s,
     'dryrun|n' => \$opt_n,
@@ -182,11 +181,18 @@ if ($opt_version) {
     exit(0);
 };
 
+if ($#ARGV < 0) {
+    HELP_MESSAGE(*STDERR);
+    exit(1);
+};
+
 my @hostlist;
-if (defined $opt_H) {
-    @hostlist = split(/,/, $opt_H);
-} else {
-    @hostlist = split(/\s/,`$libexec_dir/get_hostlist $ARGV[0]`) if (defined $ARGV[0]);
+foreach (@ARGV) {
+    if (/^@(\S+)/) {
+        push @hostlist, split(/\s+/, `$libexec_dir/get_hostlist $1`);
+    } else {
+        push @hostlist, $_;
+    };
 };
 
 # create logdir
