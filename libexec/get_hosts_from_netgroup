@@ -1,9 +1,10 @@
 #! /usr/bin/perl
 # 
-#     get_hostlist -- get netgroup members, print the hostnames line-by-line
+#     get_hosts_from_netgroup -- get netgroup members, printing
+#                                the hostnames line-by-line
 # 
 #     fai-updater - start and supervise fai softupdates on many hosts
-#     Copyright (C) 2004-2006  Henning Glawe <glaweh@debian.org>
+#     Copyright (C) 2004-2006,2020  Henning Glawe <glaweh@debian.org>
 # 
 #     This program is free software; you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
