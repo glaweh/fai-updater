@@ -181,19 +181,31 @@ if ($opt_version) {
     exit(0);
 };
 
-if ($#ARGV < 0) {
+my @hostlist;
+do {
+    my @hostlist_tmp;
+    foreach (@ARGV) {
+        if (/^@(\S+)/) {
+           push @hostlist, split(/\s+/, `$libexec_dir/get_hostlist $1`);
+        } else {
+           push @hostlist, $_;
+        };
+    };
+    # avoid updating the same host more than once
+    my %had_host;
+    foreach (@hostlist_tmp) {
+        next if ($had_host{$_});
+        $had_host{$_} = 1;
+        push @hostlist, $_;
+    };
+};
+
+if ($#hostlist < 0) {
+    print STDERR "\nNo hosts specified on command line or netgroups expanded to empty list\n\n";
     HELP_MESSAGE(*STDERR);
     exit(1);
 };
 
-my @hostlist;
-foreach (@ARGV) {
-    if (/^@(\S+)/) {
-        push @hostlist, split(/\s+/, `$libexec_dir/get_hostlist $1`);
-    } else {
-        push @hostlist, $_;
-    };
-};
 
 # create logdir
 $logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
