@@ -186,7 +186,7 @@ do {
     my @hostlist_tmp;
     foreach (@ARGV) {
         if (/^@(\S+)/) {
-           push @hostlist, split(/\s+/, `$libexec_dir/get_hostlist $1`);
+           push @hostlist, split(/\s+/, `$libexec_dir/get_hosts_from_netgroup $1`);
         } else {
            push @hostlist, $_;
         };
