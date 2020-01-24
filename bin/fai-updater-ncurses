@@ -30,7 +30,7 @@ use POSIX qw(strftime);
 # options
 our ($opt_h, $opt_version, $opt_s, $opt_n, $opt_o);
 
-our $VERSION="0.1";
+our $VERSION="0.9";
 
 my $cui;
 my $updater;
