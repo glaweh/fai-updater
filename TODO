@@ -1,9 +1,5 @@
-TODO for FAI-Updater - 02/19/2007
+TODO for FAI-Updater - 01/24/2020
 ---------------------------------
-
-- ask for additional confirmation on pressing "q" for exit
-  (Updater quits on typing "q" now, letting all pending
-   task finish though)->FIXED
 
 - highlight complete column when selecting it with arrow-keys
   ->this is a terminal-issue: with xterm it works, with rxvt not
@@ -14,15 +10,6 @@ TODO for FAI-Updater - 02/19/2007
     sometimes
 
 - build debian-package for convient installation
-
-- fai-updater can be confused when a host is specified
-  on the hostlist twice which can happen when it
-  belongs to two individual netgroups. it will
-  run "fai softupdate" twice and merge the log
-  files while the update will naturally abort on
-  one machine since another instance of fai
-  is already running (/var/run/fai/fai_softupdate_is_running
-  exists)
 
 - add possiblity to trigger sorting of hosts in
   all lists (not just waiting queue)
