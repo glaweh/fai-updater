@@ -21,6 +21,7 @@
 use strict;
 use warnings;
 
+use File::Path qw(make_path);
 use FindBin;
 use lib "$FindBin::RealBin/../lib";
 use Getopt::Long;
@@ -210,8 +211,10 @@ if ($#hostlist < 0) {
 
 
 # create logdir
-$logdir="/var/log/fai-updater/".strftime("%Y-%m-%d_%H-%M-%S",localtime);
-die "can't create logdir $logdir" unless mkdir $logdir;
+my $LOG_BASE = "$ENV{HOME}/.cache/fai-updater/";
+$logdir=$LOG_BASE . strftime("%Y-%m-%d_%H-%M-%S",localtime) . ($opt_dryrun ? '.dryrun' : '');
+die "logdir $logdir already exists" if (-d $logdir);
+die "can't create logdir $logdir" unless (make_path($logdir));
 
 #initialize Curses
 $cui=new Curses::UI(-color_support=>1, -clear_on_exit=>1);
