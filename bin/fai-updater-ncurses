@@ -27,9 +27,6 @@ use FAI::Updater::Display::Logfile;
 use FAI::Updater::Display::Curses;
 use POSIX qw(strftime);
 
-# options
-our ($opt_h, $opt_version, $opt_s, $opt_n, $opt_o);
-
 our $VERSION="1.0";
 
 my $cui;
@@ -160,18 +157,21 @@ sub viewer_update() {
 #  main routine
 # - - - - - - - - - - - - - - - - - - - -
 
+# options
+my ($opt_help, $opt_version, $opt_simultaneous, $opt_dryrun, $opt_ordered);
+
 # Adrian: also print help-message once getopts returns an error
 # (should also subpress warnings of getopts about "Unknown options" though but how ?!)
 Getopt::Long::Configure ("bundling");
 GetOptions(
-    'help|h' => \$opt_h,
+    'help|h' => \$opt_help,
     'version' => \$opt_version,
-    'simultaneous|s=i' => \$opt_s,
-    'dryrun|n' => \$opt_n,
-    'ordered|o' => \$opt_o,
+    'simultaneous|s=i' => \$opt_simultaneous,
+    'dryrun|n' => \$opt_dryrun,
+    'ordered|o' => \$opt_ordered,
 ) or HELP_MESSAGE(*STDERR) and exit (1);
 
-if ($opt_h) {
+if ($opt_help) {
     HELP_MESSAGE(*STDOUT);
     exit(0);
 };
@@ -243,9 +243,9 @@ $cui->set_binding( \&cancel_update, "c");
 $cui->set_binding( \&viewer_off, "\e");
 
 $display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
-my $fai_update_command = ($opt_n ? "$libexec_dir/dryrun" : "$libexec_dir/faiupdate" );
-$updater=FAI::Updater->new(DISPLAY=>$display, COMMAND=>$fai_update_command, ORDERED=>$opt_o, LOGDIR=>$logdir);
-$updater->max_simultanous($opt_s) if $opt_s;
+my $fai_update_command = ($opt_dryrun ? "$libexec_dir/dryrun" : "$libexec_dir/faiupdate" );
+$updater=FAI::Updater->new(DISPLAY=>$display, COMMAND=>$fai_update_command, ORDERED=>$opt_ordered, LOGDIR=>$logdir);
+$updater->max_simultanous($opt_simultaneous) if $opt_simultaneous;
 $updater->init_hostlist(@hostlist);
 
 $cui->draw();
