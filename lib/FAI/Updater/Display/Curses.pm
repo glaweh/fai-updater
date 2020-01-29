@@ -28,21 +28,21 @@ use base qw(FAI::Updater::Display);
 	
 sub _init {
 	my $self=shift;
-	$self->{TITLES}=[qw(unreachable error success running waiting)];
+	$self->{TITLES}=[qw(waiting running success error unreachable)];
 	$self->{COLORS}={ unreachable=>'magenta',
 		error=>'red',
 		success=>'green',
 		running=>'yellow',
 		waiting=>'blue'};
 	$self->{COLUMN}={
-		unreachable=>0,
-		error=>1,
-		unfinished=>1,
-		empty=>0,
+		waiting=>0,
+		running=>1,
+		started=>1,
 		success=>2,
-		running=>3,
-		started=>3,
-		waiting=>4
+		error=>3,
+		unfinished=>3,
+		empty=>4,
+		unreachable=>4,
 	};
 	$self->SUPER::_init(@_);
 	die "I need a WIN" unless $self->{WIN};
