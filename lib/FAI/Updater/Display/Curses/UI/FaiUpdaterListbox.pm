@@ -37,8 +37,7 @@ sub focus_prev {
 
 sub append {
 	my $self = shift;
-	my $value = shift;
-	push @{$self->{-values}},$value;
+	push @{$self->{-values}}, @_;
 	@{$self->{-values}}=sort @{$self->{-values}};
 	$self->draw();
 }
