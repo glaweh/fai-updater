@@ -59,8 +59,9 @@ sub _init {
 			-border=>1,
 			-title=>$_,
 			-bg=>$self->{COLORS}->{$_},
-			-vscrollbar=>1
-			);
+			-vscrollbar=>1,
+			-sorted=>1,
+		);
 		$self->{COL}->[$idx]->onChange($self->{SELECT}) if ($self->{SELECT});
 		# change default bindings
 		$self->{COL}->[$idx]->clear_binding('option-select');

@@ -27,6 +27,7 @@ use base qw(Curses::UI::Listbox);
 sub new {
 	my $class = shift;
 	my $self = $class->SUPER::new(@_);
+	$self->{-sorted} = 0 unless (defined $self->{-sorted});
 	$self->set_routine('focus-prev',\&focus_prev);
 }
 
@@ -37,8 +38,18 @@ sub focus_prev {
 
 sub append {
 	my $self = shift;
-	push @{$self->{-values}}, @_;
-	@{$self->{-values}}=sort @{$self->{-values}};
+	foreach my $value (@_) {
+		if (defined $value) {
+			my $insert_pos = @{$self->{-values}};
+			if ($self->{-sorted}) {
+				for ($insert_pos=0; $insert_pos<=@{$self->{-values}}; $insert_pos++) {
+					last unless (defined $self->{-values}->[$insert_pos]);
+					last if ($self->{-values}->[$insert_pos] gt $value);
+				};
+			};
+			splice(@{$self->{-values}}, $insert_pos, 0, $value);
+		};
+	};
 	$self->draw();
 }
 
