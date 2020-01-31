@@ -1,15 +1,7 @@
-TODO for FAI-Updater - 01/24/2020
+TODO for FAI-Updater - 01/31/2020
 ---------------------------------
 
 - highlight complete column when selecting it with arrow-keys
   ->this is a terminal-issue: with xterm it works, with rxvt not
 
-- causes perl string-exception on pressing "Return" in empty
-  column->FIXED
-  - this exception may also occur during normal operation
-    sometimes
-
-- build debian-package for convient installation
-
-- add possiblity to trigger sorting of hosts in
-  all lists (not just waiting queue)
+- build debian-package for convenient installation
