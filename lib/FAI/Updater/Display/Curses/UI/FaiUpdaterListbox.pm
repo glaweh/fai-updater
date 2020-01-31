@@ -48,6 +48,8 @@ sub append {
 				};
 			};
 			splice(@{$self->{-values}}, $insert_pos, 0, $value);
+			$self->{-ypos}++ if ($insert_pos<=$self->{-ypos});
+			$self->{-selected}++ if (defined $self->{-selected} and ($insert_pos<=$self->{-selected}));
 		};
 	};
 	$self->draw();
