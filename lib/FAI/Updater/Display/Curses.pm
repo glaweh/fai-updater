@@ -44,6 +44,13 @@ sub _init {
 		empty=>4,
 		unreachable=>4,
 	};
+    $self->{SORT} = {
+        waiting     => 0,
+        running     => 0,
+        success     => 1,
+        error       => 1,
+        unreachable => 1,
+    };
 	$self->SUPER::_init(@_);
 	die "I need a WIN" unless $self->{WIN};
 	my $hostwidth=POSIX::floor($self->{WIN}->width()/scalar(@{$self->{TITLES}}));
@@ -60,7 +67,7 @@ sub _init {
 			-title=>$_,
 			-bg=>$self->{COLORS}->{$_},
 			-vscrollbar=>1,
-			-sorted=>1,
+			-sorted=>$self->{SORT}->{$_},
 		);
 		$self->{COL}->[$idx]->onChange($self->{SELECT}) if ($self->{SELECT});
 		# change default bindings
