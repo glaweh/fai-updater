@@ -136,9 +136,9 @@ sub run {
 
 sub max_simultanous {
   my $self = shift;
-  my $neu = shift;
-  if (defined $neu) {
-  	$self->{MAX_SIMULTANOUS}=$neu;
+  my $new_value = shift;
+  if (defined $new_value) {
+     $self->{MAX_SIMULTANOUS} = $new_value;
   }
   return $self->{MAX_SIMULTANOUS};
 }
