@@ -86,7 +86,7 @@ sub _check_logfile {
     if (/Fully Automatic Installation/) {
       $state=(exists $self->{HOSTPID}->{$host} ? 'running' : 'unfinished');
     }
-    if (/An error occured/ || /Skipping update/ || /ERRORS found in log files. See/ || /cvs update: authorization failed/) {
+    if (/An error occured/ || /Skipping update/ || /ERRORS found in log files. (?:See|Contents)/ || /cvs update: authorization failed/) {
       $state='error';
       last;
     }
