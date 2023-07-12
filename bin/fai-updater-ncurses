@@ -45,7 +45,7 @@ sub HELP_MESSAGE {
     my $FH = shift;
     print $FH <<EOF;
   
-Usage: $0 [options] <\@netgroup|host [...]>
+Usage: $0 [options] <\@netgroup|%hostlist|host [...]>
 
 Help Options:
   -h, --help                 display this help message
@@ -57,6 +57,9 @@ Application Options:
                              (default: $FAI::Updater::DEFAULT{MAX_SIMULTANEOUS})
   -n, --dryrun               dryrun mode: use a dummy-script instead of
                              really contacting the clients
+  -c, --command <CMD>        run this command instead of default faiupdater script.
+  -l, --hostlist <CMD>       run this command to get hostlist. host parameters starting with %
+                             are passed to this command.
 
 EOF
 }
@@ -161,7 +164,7 @@ sub viewer_update() {
 # - - - - - - - - - - - - - - - - - - - -
 
 # options
-my ($opt_help, $opt_version, $opt_simultaneous, $opt_dryrun, $opt_ordered);
+my ($opt_help, $opt_version, $opt_simultaneous, $opt_dryrun, $opt_ordered, $opt_updater_command, $opt_hostlist_command);
 
 # Adrian: also print help-message once getopts returns an error
 # (should also subpress warnings of getopts about "Unknown options" though but how ?!)
@@ -172,6 +175,8 @@ GetOptions(
     'simultaneous|s=i' => \$opt_simultaneous,
     'dryrun|n' => \$opt_dryrun,
     'ordered|o' => \$opt_ordered,
+    'command|c=s' => \$opt_updater_command,
+    'hostlist|l=s' => \$opt_hostlist_command,
 ) or HELP_MESSAGE(*STDERR) and exit (1);
 
 if ($opt_help) {
@@ -190,6 +195,8 @@ do {
     foreach (@ARGV) {
         if (/^@(\S+)/) {
            push @hostlist_tmp, split(/\s+/, `$libexec_dir/get_hosts_from_netgroup $1`);
+        } elsif ( /^%(\S+)/ ) {
+           push @hostlist_tmp, split(/\s+/, `$opt_hostlist_command $1`) if ($opt_hostlist_command);
         } else {
            push @hostlist_tmp, $_;
         };
@@ -248,7 +255,11 @@ $cui->set_binding( \&cancel_update, "c");
 $cui->set_binding( \&viewer_off, "\e");
 
 $display->append(FAI::Updater::Display::Logfile->new(FILENAME=>"$logdir/FAI_UPDATER.log"));
-my $fai_update_command = ($opt_dryrun ? "$libexec_dir/dryrun" : "$libexec_dir/faiupdate" );
+my $fai_update_command = (
+ $opt_dryrun ? "$libexec_dir/dryrun" : (
+   $opt_updater_command ? "$opt_updater_command" : "$libexec_dir/faiupdate" 
+ )
+);
 $updater=FAI::Updater->new(DISPLAY=>$display, COMMAND=>$fai_update_command, ORDERED=>$opt_ordered, LOGDIR=>$logdir);
 $updater->max_simultanous($opt_simultaneous) if $opt_simultaneous;
 $updater->init_hostlist(@hostlist);
