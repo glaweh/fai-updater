@@ -189,9 +189,9 @@ do {
     my @hostlist_tmp;
     foreach (@ARGV) {
         if (/^@(\S+)/) {
-           push @hostlist, split(/\s+/, `$libexec_dir/get_hosts_from_netgroup $1`);
+           push @hostlist_tmp, split(/\s+/, `$libexec_dir/get_hosts_from_netgroup $1`);
         } else {
-           push @hostlist, $_;
+           push @hostlist_tmp, $_;
         };
     };
     # avoid updating the same host more than once
