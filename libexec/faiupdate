@@ -27,4 +27,4 @@ if [ -z "$1" ]; then
 fi
 
 exec ssh -o BatchMode\ yes -l root \
-    -q -a -x $1 /usr/sbin/fai softupdate
+    -a -x $1 /usr/sbin/fai softupdate 2>&1
